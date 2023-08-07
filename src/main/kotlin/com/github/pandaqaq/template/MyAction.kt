@@ -1,4 +1,4 @@
-package com.github.pandaqaq.pandamvptemplate
+package com.github.pandaqaq.template
 
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent

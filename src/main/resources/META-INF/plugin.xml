@@ -1,24 +1,46 @@
 <!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
 <idea-plugin>
     <id>com.github.pandaqaq.pandamvptemplate</id>
-    <name>PandaMVPTemplate Template</name>
+    <name>PandaMVP</name>
     <vendor>pandaqaq</vendor>
 
+    <description><![CDATA[
+    <h2>Android代码生成插件,配套 panda-base 基础开发组件使用,帮助快速生成 MVP 模板代码，方便新人快速上手</h2>
+    <ul>
+        <li>Activity: Folder-> New -> Activity -> Mvp Activity</li>
+        <li>Activity: Folder-> New -> Activity -> Refresh Activity</li>
+        <li>Fragment: Folder-> New -> Fragment -> Mvp Fragment</li>
+        <li>Fragment: Folder-> New -> Fragment -> Refresh Fragment</li>
+    </ul>
+    ]]></description>
+
+    <change-notes><![CDATA[
+    <h1>0.0.1</h1>
+    <ul>
+        <li>You can generate android code with this plugin</li>
+        <li>You can generate normal Activity/Fragment code and MVP Activity/Fragment code</li>
+    </ul>
+    ]]></change-notes>
+
+    <depends>org.jetbrains.android</depends>
+    <depends>org.jetbrains.kotlin</depends>
+    <depends>com.intellij.modules.java</depends>
     <depends>com.intellij.modules.platform</depends>
 
-    <resource-bundle>messages.MyBundle</resource-bundle>
+    <!--    <resource-bundle>messages.MyBundle</resource-bundle>-->
 
-    <extensions defaultExtensionNs="com.intellij">
-        <toolWindow factoryClass="com.github.pandaqaq.pandamvptemplate.toolWindow.MyToolWindowFactory" id="MyToolWindow"/>
+    <extensions defaultExtensionNs="com.android.tools.idea.wizard.template">
+        <wizardTemplateProvider implementation="com.github.pandaqaq.generator.PluginGeneratorProvider"/>
     </extensions>
 
     <applicationListeners>
-        <listener class="com.github.pandaqaq.pandamvptemplate.listeners.MyApplicationActivationListener" topic="com.intellij.openapi.application.ApplicationActivationListener"/>
+        <listener class="com.github.pandaqaq.template.listeners.MyProjectManagerListener"
+                  topic="com.intellij.openapi.project.ProjectManagerListener"/>
     </applicationListeners>
-    
+
     <actions>
-        <action class="com.github.pandaqaq.pandamvptemplate.MyAction" id="MyAction">
-            <add-to-group group-id="StructureViewPopupMenu" />
+        <action class="com.github.pandaqaq.template.MyAction" id="MyAction">
+            <add-to-group group-id="StructureViewPopupMenu"/>
         </action>
     </actions>
 </idea-plugin>
