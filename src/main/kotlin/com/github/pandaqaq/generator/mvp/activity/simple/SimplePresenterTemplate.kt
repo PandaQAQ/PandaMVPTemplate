@@ -1,4 +1,4 @@
-package com.github.pandaqaq.generator.mvp.activity.refresh.templates
+package com.github.pandaqaq.generator.mvp.activity.simple
 
 import com.android.tools.idea.wizard.template.toUpperCamelCase
 import com.github.pandaqaq.generator.util.time
@@ -7,7 +7,7 @@ import com.github.pandaqaq.generator.util.time
  * @author  HuXinYu
  * Desc:    mvp presenter 模板
  */
-fun refreshPresenterTemp(
+fun simplePresenterTemp(
     applicationPackage: String?,
     packageName: String,
     prefixName:String,

@@ -1,5 +1,6 @@
-package com.github.pandaqaq.generator.mvp.fragment.refresh.templates
+package com.github.pandaqaq.generator.mvp.activity.refresh
 
+import com.android.tools.idea.wizard.template.toUpperCamelCase
 import com.github.pandaqaq.generator.util.time
 
 /**
@@ -15,15 +16,14 @@ fun refreshPresenterTemp(
 ) = """
     package $packageName
 
-    import com.pandaq.uires.widget.recyclerview.RefreshRecyclerView
-    import $applicationPackage.base.MainBasePresenter
+    import $applicationPackage.base.${toUpperCamelCase(prefixName)}BasePresenter
 
     /**
     * Created by huxinyu on ${time()}.
     * Email : panda.h@foxmail.com
     * Description :
     */
-    class $presenterName: MainBasePresenter<$viewName>() {
+    class $presenterName: ${toUpperCamelCase(prefixName)}BasePresenter<$viewName>() {
     
     }
 """.trimIndent()

@@ -1,4 +1,4 @@
-package com.github.pandaqaq.generator.mvp.fragment.refresh.templates
+package com.github.pandaqaq.generator.mvp.fragment.refresh
 
 import com.github.pandaqaq.generator.util.time
 
@@ -9,8 +9,7 @@ import com.github.pandaqaq.generator.util.time
  */
 fun refreshViewTemp(
         packageName: String,
-        viewName: String,
-        desc:String
+        viewName: String
 ) = """
     package $packageName
 
@@ -19,7 +18,7 @@ fun refreshViewTemp(
     /**
      * Created by huxinyu on ${time()}.
      * Email : panda.h@foxmail.com
-     * Description :$desc
+     * Description :
      */
     interface $viewName : IView {
 

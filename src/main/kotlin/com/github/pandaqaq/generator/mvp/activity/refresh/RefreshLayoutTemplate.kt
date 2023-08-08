@@ -1,4 +1,4 @@
-package com.github.pandaqaq.generator.mvp.activity.refresh.templates
+package com.github.pandaqaq.generator.mvp.activity.refresh
 
 /**
  * @author  HuXinYu

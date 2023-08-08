@@ -1,4 +1,4 @@
-package com.github.pandaqaq.generator.mvp.fragment.simple.templates
+package com.github.pandaqaq.generator.mvp.fragment.simple
 
 import com.android.tools.idea.wizard.template.toUpperCamelCase
 import com.github.pandaqaq.generator.util.time

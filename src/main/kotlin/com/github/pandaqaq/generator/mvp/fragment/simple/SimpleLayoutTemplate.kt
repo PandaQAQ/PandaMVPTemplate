@@ -1,4 +1,4 @@
-package com.github.pandaqaq.generator.mvp.activity.simple.templates
+package com.github.pandaqaq.generator.mvp.fragment.simple
 
 /**
  * @author  HuXinYu

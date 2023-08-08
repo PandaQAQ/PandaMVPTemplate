@@ -1,29 +1,28 @@
-package com.github.pandaqaq.generator.mvp.activity.simple.templates
+package com.github.pandaqaq.generator.mvp.fragment.refresh
 
-import com.android.tools.idea.wizard.template.toUpperCamelCase
 import com.github.pandaqaq.generator.util.time
 
 /**
  * @author  HuXinYu
  * Desc:    mvp presenter 模板
  */
-fun simplePresenterTemp(
+fun refreshPresenterTemp(
     applicationPackage: String?,
     packageName: String,
-    prefixName:String,
     presenterName: String,
     viewName: String
 ) = """
     package $packageName
 
-    import $applicationPackage.base.${toUpperCamelCase(prefixName)}BasePresenter
+    import com.pandaq.uires.widget.recyclerview.RefreshRecyclerView
+    import $applicationPackage.base.MainBasePresenter
 
     /**
     * Created by huxinyu on ${time()}.
     * Email : panda.h@foxmail.com
     * Description :
     */
-    class $presenterName: ${toUpperCamelCase(prefixName)}BasePresenter<$viewName>() {
+    class $presenterName: MainBasePresenter<$viewName>() {
     
     }
 """.trimIndent()

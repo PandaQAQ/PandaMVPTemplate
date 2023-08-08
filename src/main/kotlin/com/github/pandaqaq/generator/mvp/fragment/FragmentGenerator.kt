@@ -2,8 +2,9 @@ package com.github.pandaqaq.generator.mvp.fragment
 
 import com.android.tools.idea.wizard.template.*
 import com.android.tools.idea.wizard.template.impl.activities.common.MIN_API
-import com.github.pandaqaq.generator.mvp.fragment.refresh.refreshFragmentRecipe
-import com.github.pandaqaq.generator.mvp.fragment.simple.simpleFragmentRecipe
+import com.github.pandaqaq.generator.emuns.FragmentInitParam
+import com.github.pandaqaq.generator.emuns.ItemType
+import com.github.pandaqaq.generator.emuns.PageType
 import com.github.pandaqaq.generator.util.defaultPackageNameParameter
 
 /**
@@ -31,13 +32,13 @@ val fragmentGenerator
             constraints = listOf(Constraint.LAYOUT, Constraint.UNIQUE, Constraint.NONEMPTY)
         }
 
-        // Activity
-        val activityName = stringParameter {
-            name = "Activity名称"
-            help = "Activity名称"
-            default = "Activity"
-            constraints = listOf(Constraint.NONEMPTY)
-            suggest = { "${toUpperCamelCase(prefixName.value)}Activity" }
+        // Fragment
+        val fragmentName = stringParameter {
+            name = "Fragment 名称"
+            help = "Fragment 名称"
+            default = "XxFragment"
+            constraints = listOf(Constraint.ACTIVITY, Constraint.NONEMPTY,Constraint.UNIQUE)
+            suggest = { "${toUpperCamelCase(prefixName.value)}Fragment" }
         }
 
         // layout
@@ -47,15 +48,14 @@ val fragmentGenerator
             default = ""
             constraints = listOf(Constraint.LAYOUT, Constraint.UNIQUE, Constraint.NONEMPTY)
             suggest = {
-                "${prefixName.value}_activity_${
+                "${prefixName.value}_fragment_${
                     camelCaseToUnderlines(
-                        activityName.value.removePrefix(
+                        fragmentName.value.removePrefix(
                             toUpperCamelCase(prefixName.value)
-                        ).removeSuffix("Activity")
+                        ).removeSuffix("Fragment")
                     )
                 }"
             }
-            enabled = { false }
         }
 
         //IView
@@ -63,9 +63,8 @@ val fragmentGenerator
             name = "IView 文件名称"
             help = "IView接口类，根据类名生成"
             default = ""
-            constraints = listOf(Constraint.NONEMPTY)
-            suggest = { "I${toUpperCamelCase(activityName.value.removeSuffix("Activity"))}View" }
-            enabled = { false }
+            constraints = listOf(Constraint.NONEMPTY,Constraint.CLASS, Constraint.UNIQUE)
+            suggest = { "I${toUpperCamelCase(fragmentName.value.removeSuffix("Fragment"))}View" }
         }
 
         //presenter
@@ -73,63 +72,60 @@ val fragmentGenerator
             name = "Presenter 文件名称"
             help = "Presenter，根据类名生成"
             default = ""
-            constraints = listOf(Constraint.NONEMPTY)
-            suggest = { "${toUpperCamelCase(activityName.value.removeSuffix("Activity"))}Presenter" }
-            enabled = { false }
+            constraints = listOf(Constraint.NONEMPTY,Constraint.CLASS, Constraint.UNIQUE)
+            suggest = { "${toUpperCamelCase(fragmentName.value.removeSuffix("Fragment"))}Presenter" }
         }
 
-        // 组件前缀
-        val isRefreshList = booleanParameter {
-            name = "是否为刷新列表页面"
-            default = false
-            help = "自动生成可刷新的页面，页面默认填充一个带刷新和加载更多的 RecyclerView"
+        // 是否为刷新页面
+        val pageType = enumParameter<PageType> {
+            name = "Fragment 为普通Fragment，还是带刷新加载"
+            default = PageType.NORMAL
+            help = "NORMAL 为普通 Fragment，REFRESH 为自带刷新和加载的列表 Fragment"
         }
 
-        //desc
-        val desc = stringParameter {
-            name = "description"
-            default = ""
-            help = "请输入注释"
-            constraints = listOf(Constraint.STRING)
+        // 列表页是否为多布局 item
+        val itemType = enumParameter<ItemType> {
+            name = "列表 Fragment Item 类型，创建不同 Adapter 模板"
+            default = ItemType.SINGLE
+            help = "NONE 不创建Adapter，SINGLE 创建单类型 Adapter，MULTI 创建多类型"
+            visible = {
+                pageType.value == PageType.REFRESH
+            }
+        }
+
+        // 基础参数配置
+        val initParameter = enumParameter<FragmentInitParam> {
+            name = "Fragment 初始化参数"
+            help = "FULLSCREEN：需要全屏无Toolbar，WITH_STATE：需要加载状态，BOTH：都需要，NONE：都不需要"
+            default = FragmentInitParam.NONE
         }
 
         val packageName = defaultPackageNameParameter
 
         widgets(
             TextFieldWidget(prefixName),//资源文件限制前缀
-            TextFieldWidget(activityName),//Activity名称，layout、iView、presenter 的名称都根据这个来生成
-            TextFieldWidget(desc),
+            TextFieldWidget(fragmentName),//Fragment名称，layout、iView、presenter 的名称都根据这个来生成
             TextFieldWidget(layoutName),
             TextFieldWidget(iViewName),
             TextFieldWidget(presenterName),
-            CheckBoxWidget(isRefreshList),
+            EnumWidget(pageType),
+            EnumWidget(itemType),
+            EnumWidget(initParameter),
             PackageNameWidget(packageName)
         )
 
         recipe = {
-            if (isRefreshList.value) {
-                refreshFragmentRecipe(
-                    it as ModuleTemplateData,
-                    packageName.value,
-                    prefixName.value,
-                    activityName.value,
-                    presenterName.value,
-                    iViewName.value,
-                    layoutName.value,
-                    desc.value
-                )
-            } else {
-                simpleFragmentRecipe(
-                    it as ModuleTemplateData,
-                    packageName.value,
-                    prefixName.value,
-                    activityName.value,
-                    presenterName.value,
-                    iViewName.value,
-                    layoutName.value,
-                    desc.value
-                )
-            }
+            fragmentRecipe(
+                it as ModuleTemplateData,
+                packageName.value,
+                prefixName.value,
+                fragmentName.value,
+                presenterName.value,
+                iViewName.value,
+                layoutName.value,
+                pageType.value,
+                itemType.value,
+                initParameter.value
+            )
         }
     }
-

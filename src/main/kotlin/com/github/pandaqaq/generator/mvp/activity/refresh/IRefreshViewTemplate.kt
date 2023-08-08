@@ -1,4 +1,4 @@
-package com.github.pandaqaq.generator.mvp.activity.simple.templates
+package com.github.pandaqaq.generator.mvp.activity.refresh
 
 import com.github.pandaqaq.generator.util.time
 
@@ -7,10 +7,9 @@ import com.github.pandaqaq.generator.util.time
  * @author  HuXinYu
  * Desc:    mvp view 模板
  */
-fun mvpViewTemp(
+fun refreshViewTemp(
         packageName: String,
-        viewName: String,
-        desc:String
+        viewName: String
 ) = """
     package $packageName
 
@@ -19,7 +18,7 @@ fun mvpViewTemp(
     /**
      * Created by huxinyu on ${time()}.
      * Email : panda.h@foxmail.com
-     * Description :$desc
+     * Description :
      */
     interface $viewName : IView {
 

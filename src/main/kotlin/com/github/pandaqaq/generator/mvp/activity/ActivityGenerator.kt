@@ -2,10 +2,10 @@ package com.github.pandaqaq.generator.mvp.activity
 
 import com.android.tools.idea.wizard.template.*
 import com.android.tools.idea.wizard.template.impl.activities.common.MIN_API
-import com.github.pandaqaq.generator.mvp.activity.refresh.refreshActivityRecipe
-import com.github.pandaqaq.generator.mvp.activity.simple.simpleActivityRecipe
+import com.github.pandaqaq.generator.emuns.ActivityInitParam
+import com.github.pandaqaq.generator.emuns.ItemType
+import com.github.pandaqaq.generator.emuns.PageType
 import com.github.pandaqaq.generator.util.defaultPackageNameParameter
-import java.net.URL
 
 /**
  * @author  HuXinYu
@@ -38,8 +38,8 @@ val activityGenerator
         val activityName = stringParameter {
             name = "Activity名称"
             help = "Activity名称"
-            default = "Activity"
-            constraints = listOf(Constraint.NONEMPTY)
+            default = "XxActivity"
+            constraints = listOf(Constraint.ACTIVITY, Constraint.NONEMPTY,Constraint.UNIQUE)
             suggest = { "${toUpperCamelCase(prefixName.value)}Activity" }
         }
 
@@ -58,7 +58,6 @@ val activityGenerator
                     )
                 }"
             }
-            enabled = { false }
         }
 
         //IView
@@ -66,9 +65,8 @@ val activityGenerator
             name = "IView 文件名称"
             help = "IView接口类，根据类名生成"
             default = ""
-            constraints = listOf(Constraint.NONEMPTY)
+            constraints = listOf(Constraint.NONEMPTY,Constraint.CLASS, Constraint.UNIQUE)
             suggest = { "I${toUpperCamelCase(activityName.value.removeSuffix("Activity"))}View" }
-            enabled = { false }
         }
 
         //presenter
@@ -76,24 +74,43 @@ val activityGenerator
             name = "Presenter 文件名称"
             help = "Presenter，根据类名生成"
             default = ""
-            constraints = listOf(Constraint.NONEMPTY)
+            constraints = listOf(Constraint.NONEMPTY,Constraint.CLASS, Constraint.UNIQUE)
             suggest = { "${toUpperCamelCase(activityName.value.removeSuffix("Activity"))}Presenter" }
-            enabled = { false }
         }
 
-        // 组件前缀
-        val isRefreshList = booleanParameter {
-            name = "是否为刷新列表页面"
-            default = false
-            help = "自动生成可刷新的页面，页面默认填充一个带刷新和加载更多的 RecyclerView"
+        // 是否为刷新页面
+        val pageType = enumParameter<PageType> {
+            name = "Activity 为普通Activity，还是带刷新加载"
+            default = PageType.NORMAL
+            help = "NORMAL 为普通 Activity，REFRESH 为自带刷新和加载的列表 Activity"
         }
 
-        //desc
-        val desc = stringParameter {
-            name = "description"
+        // 列表页是否为多布局 item
+        val itemType = enumParameter<ItemType> {
+            name = "列表 Activity Item 类型，创建不同 Adapter 模板"
+            default = ItemType.SINGLE
+            help = "NONE 不创建Adapter，SINGLE 创建单类型 Adapter，MULTI 创建多类型"
+            visible = {
+                pageType.value == PageType.REFRESH
+            }
+        }
+
+        // 基础参数配置
+        val initParameter = enumParameter<ActivityInitParam> {
+            name = "Activity 初始化参数"
+            help = "FULLSCREEN：需要全屏无Toolbar，WITH_STATE：需要加载状态，BOTH：都需要，NONE：都不需要"
+            default = ActivityInitParam.NONE
+        }
+
+        // Activity 标题名称
+        val titleName = stringParameter {
+            name = "Activity 标题名称"
             default = ""
-            help = "请输入注释"
-            constraints = listOf(Constraint.STRING)
+            help = "请输入Activity标题"
+            constraints = listOf(Constraint.NONEMPTY, Constraint.STRING)
+            visible = {
+                initParameter.value == ActivityInitParam.NONE || initParameter.value == ActivityInitParam.WITH_STATE
+            }
         }
 
         val packageName = defaultPackageNameParameter
@@ -101,38 +118,29 @@ val activityGenerator
         widgets(
             TextFieldWidget(prefixName),//资源文件限制前缀
             TextFieldWidget(activityName),//Activity名称，layout、iView、presenter 的名称都根据这个来生成
-            TextFieldWidget(desc),
             TextFieldWidget(layoutName),
             TextFieldWidget(iViewName),
             TextFieldWidget(presenterName),
-            CheckBoxWidget(isRefreshList),
+            EnumWidget(pageType),
+            EnumWidget(itemType),
+            EnumWidget(initParameter),
+            TextFieldWidget(titleName),
             PackageNameWidget(packageName)
         )
 
         recipe = {
-            if (isRefreshList.value) {
-                refreshActivityRecipe(
-                    it as ModuleTemplateData,
-                    packageName.value,
-                    prefixName.value,
-                    activityName.value,
-                    presenterName.value,
-                    iViewName.value,
-                    layoutName.value,
-                    desc.value
-                )
-            } else {
-                simpleActivityRecipe(
-                    it as ModuleTemplateData,
-                    packageName.value,
-                    prefixName.value,
-                    activityName.value,
-                    presenterName.value,
-                    iViewName.value,
-                    layoutName.value,
-                    desc.value
-                )
-            }
+            activityRecipe(
+                it as ModuleTemplateData,
+                packageName.value,
+                prefixName.value,
+                activityName.value,
+                presenterName.value,
+                iViewName.value,
+                layoutName.value,
+                pageType.value,
+                itemType.value,
+                initParameter.value
+            )
         }
     }
 
